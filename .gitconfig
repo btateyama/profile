@@ -58,7 +58,7 @@
         fpush = !confirm.sh 'Force push branch to remote?' && git push --no-verify --force origin $(git branch --show-current) && git fetch
  
         # prepare for rebase
-        prebase = !git fetch -p origin develop && git co -b $(git branch --show-current)-bak-$(date "+%Y%m%d_%H%M") && git co - && git pull && echo "Ready to rebase.  e.g. git rebase origin/develop"
+        prebase = !git fetch -p origin main && git co -b $(git branch --show-current)-bak-$(date "+%Y%m%d_%H%M") && git co - && git pull && echo "Ready to rebase.  e.g. git rebase origin/main"
 
         # clean up branches
         # git branch --merged | egrep -v "(^\*|master|dev)" | xargs git branch -d
