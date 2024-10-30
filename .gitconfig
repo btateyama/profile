@@ -1,0 +1,67 @@
+[user]
+        name = Beau Tateyama
+        email = beau@prooftrading.com
+[push]
+        # make git push default to do 'git push origin feature/CURRENT_branch'
+        default = current
+
+[color]
+        diff = auto
+        status = auto
+        branch = auto
+
+[alias]
+        # colorful text branch view, one commit per line
+        lg = log --color --graph --pretty=tformat:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit
+        # less busy one commit per line
+        ls = log --color --pretty=tformat:' %Cred%h%Creset | %ad | %C(yellow)%an%Creset | %s ' --abbrev-commit --date=short
+        # log with files affected
+        la = log --color --abbrev-commit --name-status
+        co = checkout
+        info = status
+        # show commit files
+        showf = !git show $1 --name-status
+        # list local branches
+        bl = branch -l
+        # list remote branches
+        ba = branch -a
+        # list remote branches with more info
+        br = remote show origin
+        #sweep = !git branch --merged | grep -v '\\*' | grep -v master | xargs -n 1 git branch -d
+
+        # check status of all changes: working, commited locally but not sent to remote, changes on remote to pull in
+        #sts = !pwd=${PWD} && echo -e '\\e[34m\\e[1mUncommited Changes:\\e[0m' && cd ${GIT_PREFIX} && git status . && cd ${pwd} && echo -e '\n\\e[34m\\e[1mCommited Changes to PUSH from local to remote:\\e[0m' && git --no-pager ls FETCH_HEAD..HEAD .  &&  echo -e '\\e[34m\\e[1m\nCommited Changes to PULL from remote to local:\\e[0m' &&git --no-pager ls HEAD..FETCH_HEAD .
+        sts = !echo -e '\\e[34m\\e[1mUncommited Changes:\\e[0m' && git status . && echo -e '\n\\e[34m\\e[1mCommited Changes to PUSH from local to remote:\\e[0m' && git --no-pager ls FETCH_HEAD..HEAD .  &&  echo -e '\\e[34m\\e[1m\nCommited Changes to PULL from remote to local:\\e[0m' &&git --no-pager ls HEAD..FETCH_HEAD .
+        fs = !git fetch && git sts
+
+        # switch branch
+        switch = !echo "[$1]" && git checkout $1 && git fetch
+        # sync
+        sync = !confirm.sh 'Merge latest changes from master onto current branch?' && git merge origin/master && git fetch
+
+        # push it up to remote
+        rdone = !git sts && confirm.sh 'Push changes to remote?' && git push && git fetch && git sts
+
+        # revert everything my branch
+        resetbranch = !confirm.sh 'Reset branch undoing all local changes?' && git reset --hard origin/HEAD && git fetch
+        #resetall = !echo -e 'Fetching latest...' && git fetch origin && echo -e 'Reverting all changes on local repo...' && git reset --hard origin . && git status
+        #nukebranch = !echo -e 'Branching to temp...' && git branch temp && git checkout temp && echo -e 'Deleting local branch...' && git branch -D $1 && echo -e 'Checkout branch again...' && git checkout $1 && git branch -D temp && git status
+
+        addu = !cd -- \"${GIT_PREFIX:-.}\" && git add -u . && git status .
+        s = !cd -- \"${GIT_PREFIX:-.}\" && git status .
+        diffs = !cd -- \"${GIT_PREFIX:-.}\" && git diff --staged
+ 
+        # push local branch to remote for first time
+        pushup = !git s && confirm.sh 'Push local branch to remote?' && git push --no-verify -u origin $(git branch --show-current) && git fetch
+ 
+        # force push after rebase
+        fpush = !confirm.sh 'Force push branch to remote?' && git push --no-verify --force origin $(git branch --show-current) && git fetch
+ 
+        # prepare for rebase
+        prebase = !git fetch -p origin develop && git co -b $(git branch --show-current)-bak-$(date "+%Y%m%d_%H%M") && git co - && git pull && echo "Ready to rebase.  e.g. git rebase origin/develop"
+
+        # clean up branches
+        # git branch --merged | egrep -v "(^\*|master|dev)" | xargs git branch -d
+[core]
+        autocrlf = input
+        excludesfile = ~/.gitignore
